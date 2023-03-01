@@ -1,0 +1,72 @@
+node('built-in') 
+{
+    stage('ContinuousDownload') 
+    {
+        git 'https://github.com/intelliqittrainings/maven.git'
+    }
+    stage('ContinuousBuild') 
+    {
+        sh 'mvn package'
+    }
+    stage('ContinuousDeployment') 
+    {
+        deploy adapters: [tomcat9(credentialsId: 'cfa3186f-d898-49dd-bccd-177c6095f352', path: '', url: 'http://172.31.52.102:8080')], contextPath: 'testingapp', war: '**/*.war'     
+    }
+    stage('Continuoustesting') 
+    {
+        git 'https://github.com/intelliqittrainings/FunctionalTesting.git'
+        sh 'java -jar /home/ubuntu/.jenkins/workspace/scriptedpipeline1/testing.jar'
+    }
+     stage('ContinuousDelivaery') 
+    {
+        deploy adapters: [tomcat9(credentialsId: 'cfa3186f-d898-49dd-bccd-177c6095f352', path: '', url: 'http://172.31.50.68:8080')], contextPath: 'prodapp', war: '**/*.war'
+    }
+}
+
+=====================================================================================================================================
+pipeline
+{
+    agent any
+    stages
+    {
+        stage('ContinuousDownload') 
+        {
+           steps
+           {
+            git 'https://github.com/intelliqittrainings/maven.git'
+           }
+        }
+         stage('ContinuousBuild') 
+        {
+           steps
+           {
+            sh 'mvn package'
+           }
+        }
+        stage('ContinuosDeployment') 
+        {
+           steps
+           {
+            deploy adapters: [tomcat9(credentialsId: 'cfa3186f-d898-49dd-bccd-177c6095f352', path: '', url: 'http://172.31.52.102:8080')], contextPath: 'test1', war: '**/*.war'
+           }
+        }
+        stage('Continuostesting') 
+        {
+           steps
+           {
+            git 'https://github.com/intelliqittrainings/FunctionalTesting.git'
+            sh 'java -jar /home/ubuntu/.jenkins/workspace/Declaritivepipeline1/testing.jar'
+           }
+        }
+        stage('ContinuosDelivery') 
+        {
+           steps
+           {
+            deploy adapters: [tomcat9(credentialsId: 'cfa3186f-d898-49dd-bccd-177c6095f352', path: '', url: 'http://172.31.50.68:8080')], contextPath: 'prod1', war: '**/*.war'
+            
+           }
+        }
+        
+       
+   }    
+}
